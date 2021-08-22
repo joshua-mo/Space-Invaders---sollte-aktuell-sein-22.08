@@ -12,21 +12,20 @@
 
 
 
-
 #define NUM_SHOOTS 50
-#define NUM_MAX_ENEMIES 50
+
 #define FIRST_WAVE 10
 #define SECOND_WAVE 20
 #define THIRD_WAVE 50
 #define NUM_MAX_PLANETS 2
 #define NUM_MAX_ASTEROIDS 50
 
-
 namespace Game {
     class GameScreen : public Screen {
    
     private:
         //Texturen        
+
         Texture2D background;
         Texture2D Planet1;
         Texture2D Planet2;
@@ -36,9 +35,10 @@ namespace Game {
         Texture2D Lives;
         Texture2D Spaces;
         Texture2D asteroidtexture;
-        Texture2D BossMonster;
-        
-       
+        Texture2D bullettext;
+
+    
+     
 
     
     private:
@@ -69,22 +69,14 @@ namespace Game {
     };
 
 
-    static Player player;
+
     static Planet planet;
-    static Bullet bullet[NUM_SHOOTS];
-    static Enemy enemy[NUM_MAX_ENEMIES];
-    static Enemy enemy2[NUM_MAX_ENEMIES];
+   
 
-    static Asteroid asteroid[NUM_MAX_ASTEROIDS];
-    static int activeAsteroids;
-
-    static int activeEnemies;
-    static int activeEnemies2;
+   
 
 
-    static Enemy Boss[NUM_MAX_ENEMIES];
-
-    static int activeBoss;
+    
 
    
 

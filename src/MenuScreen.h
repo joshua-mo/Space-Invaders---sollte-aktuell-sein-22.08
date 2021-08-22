@@ -15,14 +15,14 @@ namespace Game {
         Texture2D quitpink;
 
     public:
-        static Screen * getInstance() {
+        static Screen* getInstance() {
             static MenuScreen instance;
             return &instance;
         }
 
-        MenuScreen(MenuScreen const &) = delete;
+        MenuScreen(MenuScreen const&) = delete;
 
-        void operator=(MenuScreen const &) = delete;
+        void operator=(MenuScreen const&) = delete;
 
         ~MenuScreen();
 

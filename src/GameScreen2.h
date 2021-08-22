@@ -26,6 +26,7 @@ namespace Game {
 
     private:
         //Texturen        
+
         Texture2D background2;
         Texture2D Planet1;
         Texture2D Planet3;
@@ -35,7 +36,7 @@ namespace Game {
         Texture2D Lives;
         Texture2D Spaces;
         Texture2D asteroidtexture;
-
+        Texture2D bullettext2;
 
 
     private:
@@ -64,7 +65,6 @@ namespace Game {
 
         void Draw() override;
     };
-
 
 
 
