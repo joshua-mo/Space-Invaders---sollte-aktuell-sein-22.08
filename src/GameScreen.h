@@ -36,7 +36,7 @@ namespace Game {
         Texture2D Spaces;
         Texture2D asteroidtexture;
         Texture2D bullettext;
-
+        Texture2D BossTexture;
     
      
 

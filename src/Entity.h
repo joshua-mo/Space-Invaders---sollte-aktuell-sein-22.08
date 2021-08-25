@@ -64,6 +64,22 @@ typedef struct Asteroid
     bool gothit;
 } Asteroid;
 
+//Boss Klasse 
+typedef struct Boss
+{
+    Rectangle rect;
+    //Vector4 pos;
+    Vector2 pos1;
+    Vector2 pos2;
+    Vector4 speed;
+    Vector2 speed1;
+    bool active;
+    Color color;
+    Texture2D texture{};
+    bool gothit;
+    int lives;
+} Boss;
+
 
 
 

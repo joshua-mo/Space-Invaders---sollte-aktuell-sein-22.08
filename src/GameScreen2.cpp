@@ -29,6 +29,12 @@ extern Asteroid asteroid[NUM_MAX_ASTEROIDS];
 
 extern int activeAsteroids;
 
+extern Boss boss[NUM_MAX_ENEMIES];
+
+extern int hits;
+
+extern int activeEnemies3;
+
 
 
 Game::GameScreen2::GameScreen2() {

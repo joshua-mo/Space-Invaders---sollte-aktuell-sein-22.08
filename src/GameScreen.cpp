@@ -32,6 +32,17 @@ extern Asteroid asteroid[NUM_MAX_ASTEROIDS];
 
 extern int activeAsteroids;
 
+extern Boss boss[NUM_MAX_ENEMIES];
+
+extern int hits;
+
+extern int activeEnemies3;
+
+extern bool BossMoving;
+
+extern Rectangle StopBoss;
+
+
 
 Game::GameScreen::GameScreen() {
     // Your screen initialization code here...
@@ -127,7 +138,39 @@ Game::GameScreen::GameScreen() {
         bullet[i].color = MAROON;
     }
 
+    // Boss initialisieren
 
+// Load alien ship texture
+    BossTexture = LoadTexture("assets/graphics/BossSide.png");
+   
+    //Bossgegner
+    for (int i = 0; i < NUM_MAX_ENEMIES; i++)
+    {
+        boss[i].rect.width = 140;
+        boss[i].rect.height = 140;
+        boss[i].pos1.x = 1100;      //Spawnbereich neuer Gegner x
+        boss[i].pos1.y = 260;
+        boss[i].pos2.x = GetRandomValue(200, 700);
+        boss[i].pos2.y = GetRandomValue(200, 700);
+        boss[i].speed.x = 1;
+        boss[i].speed.y = 2; //Geschwindigkeit Gegner
+        boss[i].speed.z = 5;
+        boss[i].speed.w = 5;
+        boss[i].speed1 = { 5.0f, 5.0f };
+        boss[i].lives = 4;
+
+        boss[i].active = true;
+    }
+
+  
+
+    StopBoss.width = 2;
+    StopBoss.height = 1000;
+    StopBoss.x = 800;
+    StopBoss.y = 0;
+
+ 
+    
 
 
     // Gegner initialisieren
@@ -140,6 +183,7 @@ Game::GameScreen::GameScreen() {
     
         activeEnemies = 1;
         activeEnemies2 = 1;
+        activeEnemies3 = 1;
     
   
     //Einfacher Gegner
@@ -210,6 +254,51 @@ void Game::GameScreen::ProcessInput() {
 
 void Game::GameScreen::Update() {
     // Your update game code here...
+
+
+    if (highscore == 1) {
+        BossMoving = true;
+    }
+    //Boss 
+    for (int i = 0; i < NUM_MAX_ENEMIES; i++)
+    {
+       
+
+        if (BossMoving == true) {
+            boss[i].pos1.x -= boss[i].speed.x;
+        }
+
+       
+       
+        
+
+        boss[i].rect.x = boss[i].pos1.x;
+        boss[i].rect.y = boss[i].pos1.y;
+
+        
+
+        
+        boss[i].pos1.y += boss[i].speed.y;
+       
+
+        //// Check walls collision for bouncing
+        if ((boss[i].pos1.y >= (730)) || (boss[i].pos1.y <= 200)) boss[i].speed.y *= -1.0f;
+        if ((boss[i].pos1.x >= (860)) && boss[i].speed.x < 0) boss[i].speed.x *= -1.0f;
+
+        if ((boss[i].pos1.x <= (800)))  boss[i].speed.x *= -1.0f, boss[i].pos1.y += boss[i].speed.y, boss[i].speed.x = - 0.25;
+
+
+       
+
+       
+       
+
+    }
+
+
+    
+    
+
 
     for (int i = 0; i < NUM_MAX_ENEMIES; i++)
     {
@@ -523,12 +612,21 @@ void Game::GameScreen::Draw() {
      //Player zeichnen
      DrawTexture(playerTexture, player.pos.x, player.pos.y, WHITE);
 
+     //Boss zeichnen
+     for (int i = 0; i < activeEnemies3; i++)
+     {
+         if (boss[i].active)
+             DrawTexture(BossTexture, boss[i].rect.x, boss[i].rect.y, WHITE);
+     }
+
      //Gegner zeichnen
      for (int i = 0; i < activeEnemies; i++)
      {
          if (enemy[i].active)
              DrawTexture(alienTexture, enemy[i].rect.x, enemy[i].rect.y, WHITE);        
      }
+
+     DrawRectangle(StopBoss.x, StopBoss.y, StopBoss.width, StopBoss.height, RED);
 
      //Gegner2 zeichnen
      for (int i = 0; i < activeEnemies2; i++)
