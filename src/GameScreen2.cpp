@@ -7,6 +7,7 @@
 #include "StopScreen.h"
 
 
+
 extern int highscore;
 
 extern Player player;
@@ -35,6 +36,17 @@ extern int hits;
 
 extern int activeEnemies3;
 
+extern bool BossMoving;
+
+extern Rectangle StopBoss;
+
+extern Bullet bullet2[NUM_SHOOTS];
+
+extern int framescounter;
+
+extern Flotte flotte[NUM_SHOOTS];
+
+extern int framescounter2;
 
 
 Game::GameScreen2::GameScreen2() {
@@ -68,26 +80,9 @@ Game::GameScreen2::GameScreen2() {
     // Load Asteroid texture
     asteroidtexture = LoadTexture("assets/graphics/asteroid.png");
 
-    //Anzahl aktive Asteroiden 
+    
 
-    //activeAsteroids = 2;
-
-    //Asteroid 
-
-
-
-    //for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
-    //{
-    //    asteroid[i].rect.width = 50;
-    //    asteroid[i].rect.height = 64;
-    //    asteroid[i].rect.x = GetRandomValue(1060, 1200);      //Spawnbereich neuer Asteroid
-    //    asteroid[i].rect.y = GetRandomValue(0, 800);
-    //    asteroid[i].speed.x = 3;
-    //    asteroid[i].speed.y = 1; //Geschwindigkeit Gegner
-    //    asteroid[i].active = true;
-    //}
-
-
+    bullettext = LoadTexture("assets/graphics/bullet.png");
 
 
     //Planet initialisieren
@@ -102,33 +97,15 @@ Game::GameScreen2::GameScreen2() {
     // Load player ship texture
     playerTexture = LoadTexture("assets/graphics/player2.png");
 
-    //// Spieler (Viereck) initialisieren
-    //player.rect.x = 800 / 2.0f;
-
-    //player.rect.width = 35;
-    //player.rect.height = 35;
-    //player.speed.x = 7;
-    //player.speed.y = 5;
-    //player.color = WHITE;
-
-
-    // Bullets initialisieren
+   
 
     bullettext2 = LoadTexture("assets/graphics/bullet.png");
 
-    //for (int i = 0; i < NUM_SHOOTS; i++)
-    //{
-    //    bullet[i].pos.x = player.rect.x + 29;                  //Bullet zentrieren
-    //    bullet[i].rect.y = player.rect.y + player.rect.height / 4;
-    //    bullet[i].rect.width = 5;
-    //    bullet[i].rect.height = 10;
-    //    bullet[i].speed.x = 0;
-    //    bullet[i].speed.y = -10;
-    //    bullet[i].active = false;
-    //    bullet[i].color = MAROON;
-    //}
+  
 
 
+    // Load Boss ship texture
+    BossTexture = LoadTexture("assets/graphics/BossTop.png");
 
 
     // Gegner initialisieren
@@ -137,30 +114,7 @@ Game::GameScreen2::GameScreen2() {
     alienTexture = LoadTexture("assets/graphics/alien2.png");
     alienTexture2 = LoadTexture("assets/graphics/Test2.png");
 
-    //Anzahl aktive Gegner 
-
-
- /*    for (int i = 0; i < NUM_MAX_ENEMIES; i++)
-    {
-        enemy[i].pos.z = 1000 - enemy[i].pos.x;
-        enemy2[i].pos.z = 1000 - enemy2[i].pos.x;
-
-    }*/
-
-
-    ////Schwerer Gegner
-    //for (int i = 0; i < NUM_MAX_ENEMIES; i++)
-    //{
-    //    enemy2[i].rect.width = 128;
-    //    enemy2[i].rect.height = 120;
-    //    enemy2[i].rect.x = GetRandomValue(200, 672);
-    //    enemy2[i].rect.y = GetRandomValue(-1000, -20);
-    //    enemy2[i].speed.x = 5;
-    //    enemy2[i].speed.y = 2; //Geschwindigkeit Gegner
-    //    enemy2[i].active = true;
-    //    enemy2[i].gothit = false;
-    //}
-
+   
 }
 
 
@@ -213,8 +167,17 @@ void Game::GameScreen2::Update() {
     {
         bullet[i].rect.x = bullet[i].pos2.x;
         bullet[i].rect.y = bullet[i].pos2.y;
+
+  
+
+        bullet2[i].rect.x = bullet2[i].pos2.x;
+        bullet2[i].rect.y = bullet2[i].pos2.y;
+
+        flotte[i].rect2.x = flotte[i].pos2.x;
+        flotte[i].rect2.y = flotte[i].pos2.y;
     }
 
+ 
     for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
     {
         asteroid[i].rect.x = asteroid[i].pos2.x;
@@ -223,6 +186,12 @@ void Game::GameScreen2::Update() {
 
     player.rect.x = player.pos.w;
     player.rect.y = player.pos.z;
+
+    for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
+    {
+    boss[i].rect.x = boss[i].pos2.x;
+    boss[i].rect.y = boss[i].pos2.y;
+    }
 
     if (ScreenChangeto2 == false )
     {
@@ -234,13 +203,24 @@ void Game::GameScreen2::Update() {
         for (int i = 0; i < NUM_SHOOTS; i++)
         {
             bullet[i].pos2.y = 1000 - bullet[i].pos1.x;
-
+            bullet2[i].pos2.y = 1000 - bullet2[i].pos1.x;
+            flotte[i].pos2.y = 1000 - flotte[i].pos1.x;
+           
+            flotte[i].rect2.width = 70;
+            flotte[i].pos2.x = GetRandomValue(200, 730);
+           
         }
 
         for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
         {
             asteroid[i].pos2.y = 1000 - asteroid[i].pos1.x;
             asteroid[i].pos2.x = GetRandomValue(200, 800);
+        }
+
+        for (int i = 0; i < NUM_MAX_ENEMIES; i++)
+        {
+           boss[i].pos2.y = 860 - boss[i].pos1.x;
+           boss[i].speed.w = -2;
         }
 
 
@@ -258,6 +238,139 @@ void Game::GameScreen2::Update() {
         else if (player.rect.x <= -10) player.rect.x = -10;
         if ((player.rect.x) <= 200) player.rect.x = 200 + 1;         
    
+
+
+        //flotte
+        framescounter2++;
+
+        // Every two seconds (120 frames) a new random value is generated
+        if (((framescounter2 / 900) % 2) == 1)
+        {
+
+            framescounter2 = 0;
+
+
+            for (int i = 0; i < 1; i++)
+            {
+                if (!flotte[i].active)
+                {
+                    // Movement
+
+                    flotte[i].pos2.x = 0;
+                    flotte[i].pos2.y = -50;
+                    flotte[i].rect2.width = 1000;
+                    flotte[i].active = true;
+
+                    break;
+
+
+                }
+            }
+        }
+
+
+
+        // Shoot logic
+        for (int i = 0; i < NUM_SHOOTS; i++)
+        {
+            if (flotte[i].active)
+            {
+                // Movement
+                flotte[i].pos2.y += flotte[i].speed.y;
+            }
+
+            if (flotte[i].pos2.x >= 800) //Bullet über Screen hinaus
+            {
+                flotte[i].active = false;
+            }
+        }
+
+
+
+
+
+        // BULLETS 2
+
+        if (BossMoving == true)
+        {
+            
+        framescounter++;
+
+        // Every two seconds (120 frames) a new random value is generated
+        if (((framescounter / 15) % 2) == 1)
+        {
+
+            framescounter = 0;
+
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (!bullet2[i].active)
+                {
+                    // Movement
+
+
+                    bullet2[i].pos2.x = boss[i].pos2.x + 18;
+                    bullet2[i].pos2.y = boss[i].pos2.y + 5;
+                    bullet2[i].active = true;
+
+                    break;
+
+
+                }
+            }
+        }
+        }
+
+
+        // Shoot logic
+        for (int i = 0; i < NUM_SHOOTS; i++)
+        {
+            if (bullet2[i].active)
+            {
+                // Movement
+                bullet2[i].pos2.y += bullet2[i].speed.y;
+
+                // Kollision mit enemy
+                for (int j = 0; j < activeEnemies; j++)
+                {
+                    if (boss[j].active)
+                    {
+                        //BOSSGEGNER 
+                        if (CheckCollisionRecs(bullet[i].rect, boss[j].rect))
+                        {
+                            bullet[i].active = false;
+
+                            boss[j].lives--;
+                        }
+                        //BOSSGEGNER 
+                        if (CheckCollisionRecs(bullet2[i].rect, player.rect))
+                        {
+                            bullet2[i].active = false;
+
+                            player.lives--;
+                        }
+
+                    }
+
+                    if (bullet2[i].pos2.y >= 1000) //Bullet über Screen hinaus
+                    {
+                        bullet2[i].active = false;
+                    }
+                }
+            }
+        }
+
+
+
+ 
+
+
+       
+
+   
+
+
 
         // Asteroid Verhalten(Spawnverhalten)
         for (int i = 0; i < activeAsteroids; i++)
@@ -288,7 +401,9 @@ void Game::GameScreen2::Update() {
 
 
 
-        //Bullets
+      
+
+  //Bullets
         if (IsKeyPressed(KEY_SPACE)) {
 
 
@@ -339,22 +454,20 @@ void Game::GameScreen2::Update() {
 
                         }
 
-                        if (enemy2[j].gothit == true)
-                        {
-
-                            if (CheckCollisionRecs(bullet[i].rect, enemy2[j].rect))
-                            {
-                                bullet[i].active = false;
-                                enemy2[j].pos2.x = GetRandomValue(200, 800);      //Spawnbereich neuer Gegner x
-                                enemy2[j].pos2.y = GetRandomValue(-150, -300);     //Spawnbereich neuer Gegner y
-                                highscore++;
-                                enemy2[j].gothit = false;
-                            }
-                        }
                         if (CheckCollisionRecs(bullet[i].rect, enemy2[j].rect))
                         {
-                            enemy2[j].gothit = true;
                             bullet[i].active = false;
+                          
+                            enemy2[j].lives--;
+                        }
+
+                        if (enemy2[j].lives == 0)
+                        {
+                              highscore++;
+                            enemy2[j].lives = 2;
+                            enemy2[j].pos2.x = GetRandomValue(1100, 1600);      //Spawnbereich neuer Gegner x
+                            enemy2[j].pos2.y = GetRandomValue(200, 672);     //Spawnbereich neuer Gegner y
+
                         }
                     }
 
@@ -365,8 +478,6 @@ void Game::GameScreen2::Update() {
                 }
             }
         }
-
-
 
 
 
@@ -394,7 +505,50 @@ void Game::GameScreen2::Update() {
 
 
 
+    //UPDATE SECTION -- BOSSGEGNER
 
+    if (highscore == 100) {
+        BossMoving = true;
+
+        for (int i = 0; i < activeEnemies || i < activeEnemies2; i++)
+        {
+            enemy[i].speed.y = 0;
+            enemy[i].pos2.x += enemy[i].speed.x;
+            enemy2[i].speed.y = 0;
+            enemy2[i].pos2.x += enemy[i].speed.x;
+        }
+    }
+    //Boss 
+    for (int i = 0; i < NUM_MAX_ENEMIES; i++)
+    {
+
+        if (BossMoving == true) {
+           
+            boss[i].pos2.y += boss[i].speed.z;
+           
+        }
+
+        boss[i].rect.x = boss[i].pos2.x;
+        boss[i].rect.y = boss[i].pos2.y;
+
+
+        
+        boss[i].pos2.x += boss[i].speed.w;
+
+
+        //// Check walls collision for bouncing
+        if ((boss[i].pos2.x >= (730)) || (boss[i].pos2.x <= 200)) boss[i].speed.w *= -1.0f;
+        if ((boss[i].pos2.y <= (0)) && boss[i].speed.z < 0) boss[i].speed.z *= -1.0f;
+
+        if ((boss[i].pos2.y >= (100)))  boss[i].speed.z *= -1.0f, boss[i].pos2.x += boss[i].speed.w, boss[i].speed.z = -0.5, boss[i].speed.w = -2;
+
+
+
+
+
+
+
+    }
 
 
 
@@ -449,6 +603,9 @@ void Game::GameScreen2::Update() {
         {
             if (enemy[i].active)
             {
+               /* enemy[i].active = false;
+                enemy2[i].active = false;
+                boss[i].active = false;*/
                 enemy2[i].rect.x = GetRandomValue(1020, 2000);
                 enemy[i].rect.y = GetRandomValue(200, 700);
             }
@@ -485,6 +642,22 @@ void Game::GameScreen2::Draw() {
             DrawTexture(bullettext2, bullet[i].pos2.x, bullet[i].pos2.y, WHITE);
     }
 
+    //BUllet2 zeichnen
+    for (int i = 0; i < NUM_SHOOTS; i++)
+    {
+        if (bullet2[i].active)
+            /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
+            DrawTexture(bullettext2, bullet2[i].pos2.x, bullet2[i].pos2.y, WHITE);
+
+        //Flotte zeichnen
+
+        if (flotte[i].active)
+            /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
+           // DrawTexture(bullettext, bullet2[i].pos1.x, bullet2[i].pos1.y, WHITE);
+            DrawRectangle(flotte[i].pos2.x, flotte[i].pos2.y, flotte[i].rect2.width, flotte[i].rect2.height, RED);
+
+    }
+
     //Player zeichnen
     DrawTexture(playerTexture, player.pos.w, player.pos.z, WHITE);
 
@@ -508,6 +681,13 @@ void Game::GameScreen2::Draw() {
         if (asteroid[i].active)
             DrawTexture(asteroidtexture, asteroid[i].pos2.x, asteroid[i].pos2.y, WHITE);
         
+    }
+
+    //Boss zeichnen
+    for (int i = 0; i < activeEnemies3; i++)
+    {
+        if (boss[i].active)
+            DrawTexture(BossTexture, boss[i].pos2.x, boss[i].pos2.y, WHITE);
     }
 
 

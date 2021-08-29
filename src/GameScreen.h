@@ -12,6 +12,7 @@
 
 
 
+
 #define NUM_SHOOTS 50
 
 #define FIRST_WAVE 10
@@ -37,7 +38,7 @@ namespace Game {
         Texture2D asteroidtexture;
         Texture2D bullettext;
         Texture2D BossTexture;
-    
+        Texture2D waveSide;
      
 
     

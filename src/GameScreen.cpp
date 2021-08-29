@@ -8,6 +8,7 @@
 #include "StopScreen.h"
 
 
+
 extern int highscore;
 
 extern Player player;
@@ -40,9 +41,23 @@ extern int activeEnemies3;
 
 extern bool BossMoving;
 
-extern Rectangle StopBoss;
 
 
+extern Bullet bullet2[NUM_SHOOTS];
+
+extern int framescounter;
+
+extern Flotte flotte[NUM_SHOOTS];
+
+extern int framescounter2;
+
+int h, m, s;
+
+
+
+int hr = h;
+int min = m;
+int sec = s;
 
 Game::GameScreen::GameScreen() {
     // Your screen initialization code here...
@@ -62,7 +77,12 @@ Game::GameScreen::GameScreen() {
     Spaces = LoadTexture("assets/graphics/Spaces.png");
     Lives = LoadTexture("assets/graphics/Lives.png");
 
-    
+
+    h = 0;
+    m = 10;
+    s = 0;
+
+    //INIT SECTION -- ASTEROID    
 
     // Load Asteroid texture
     asteroidtexture = LoadTexture("assets/graphics/asteroid.png");
@@ -70,10 +90,6 @@ Game::GameScreen::GameScreen() {
     //Anzahl aktive Asteroiden 
 
     activeAsteroids = 2;
-
-    //Asteroid 
-
-
 
     for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
     {
@@ -91,7 +107,7 @@ Game::GameScreen::GameScreen() {
     }
 
 
-    //Planet initialisieren
+    //INIT SECTION -- PLANET
 
     planet.position.x = -175;
     planet.position.y = 500;
@@ -100,6 +116,7 @@ Game::GameScreen::GameScreen() {
     planet.radius = 350;
        
 
+ //INIT SECTION -- PLAYER
 
     //Spieler initialisieren
     // Load player ship texture
@@ -120,9 +137,9 @@ Game::GameScreen::GameScreen() {
     player.color = WHITE;
 
 
-    // Bullets initialisieren
-    bullettext = LoadTexture("assets/graphics/bullet2.png");
-    
+    //INIT SECTION -- BULLETS
+
+   
 
     for (int i = 0; i < NUM_SHOOTS; i++)
     {
@@ -138,40 +155,68 @@ Game::GameScreen::GameScreen() {
         bullet[i].color = MAROON;
     }
 
-    // Boss initialisieren
+    //INIT SECTION -- BULLETS2
 
-// Load alien ship texture
+    bullettext = LoadTexture("assets/graphics/bullet2.png");
+
+    for (int i = 0; i < NUM_SHOOTS; i++)
+    {
+        bullet2[i].pos1.x = boss[i].pos1.x + player.rect.width / 4;
+        bullet2[i].pos1.y = boss[i].pos1.x + 5;                                //Bullet zentrieren
+        bullet2[i].pos2.x = boss[i].pos2.y + player.rect.width / 4;
+        bullet2[i].pos2.y = boss[i].pos2.y + 5;
+        bullet2[i].rect.width = 20;
+        bullet2[i].rect.height = 10;
+        bullet2[i].speed.x = 10;
+        bullet2[i].speed.y = 10;
+        bullet2[i].active = false;
+        bullet2[i].color = MAROON;
+    }
+
+//INIT SECTION -- BOSSGEGNER
+
+    // Load alien ship texture
     BossTexture = LoadTexture("assets/graphics/BossSide.png");
-   
-    //Bossgegner
+
     for (int i = 0; i < NUM_MAX_ENEMIES; i++)
     {
         boss[i].rect.width = 140;
         boss[i].rect.height = 140;
         boss[i].pos1.x = 1100;      //Spawnbereich neuer Gegner x
         boss[i].pos1.y = 260;
-        boss[i].pos2.x = GetRandomValue(200, 700);
-        boss[i].pos2.y = GetRandomValue(200, 700);
+        boss[i].pos2.x = 430;
+        boss[i].pos2.y = -200;
         boss[i].speed.x = 1;
         boss[i].speed.y = 2; //Geschwindigkeit Gegner
-        boss[i].speed.z = 5;
-        boss[i].speed.w = 5;
+        boss[i].speed.z = 2;
+        boss[i].speed.w = 0;
         boss[i].speed1 = { 5.0f, 5.0f };
-        boss[i].lives = 4;
+        boss[i].lives = 30;
 
         boss[i].active = true;
     }
 
   
 
-    StopBoss.width = 2;
-    StopBoss.height = 1000;
-    StopBoss.x = 800;
-    StopBoss.y = 0;
+  
 
- 
+    waveSide = LoadTexture("assets/graphics/streifen.png");
     
-
+    for (int i = 0; i < NUM_SHOOTS; i++)
+    {
+        flotte[i].pos1.x = boss[i].pos1.x + player.rect.width / 4;
+        flotte[i].pos1.y = 0;                                //Bullet zentrieren
+        flotte[i].pos2.x = 0;
+        flotte[i].pos2.y = boss[i].pos2.x + player.rect.width / 4;
+        flotte[i].rect.width = 25;
+        flotte[i].rect.height = 1000;
+        flotte[i].rect2.width = 1000;
+        flotte[i].rect2.height = 25;
+        flotte[i].speed.x = +5;
+        flotte[i].speed.y = +5;
+        flotte[i].active = false;
+        flotte[i].color = BLACK;
+    }
 
     // Gegner initialisieren
 
@@ -181,7 +226,7 @@ Game::GameScreen::GameScreen() {
 
     //Anzahl aktive Gegner 
     
-        activeEnemies = 1;
+        activeEnemies = 2;
         activeEnemies2 = 1;
         activeEnemies3 = 1;
     
@@ -196,10 +241,10 @@ Game::GameScreen::GameScreen() {
         enemy[i].pos1.y = GetRandomValue(200, 700);
         enemy[i].pos2.x = GetRandomValue(200, 700);
         enemy[i].pos2.y = GetRandomValue(200, 700);
-        enemy[i].speed.x = 5; 
-        enemy[i].speed.y = 5; //Geschwindigkeit Gegner
-        enemy[i].speed.z = 5;
-        enemy[i].speed.w = 5; 
+        enemy[i].speed.x = 0; 
+        enemy[i].speed.y = 0; //Geschwindigkeit Gegner
+        enemy[i].speed.z = 0;
+        enemy[i].speed.w = 0; 
        
 
         enemy[i].active = true;
@@ -213,12 +258,12 @@ Game::GameScreen::GameScreen() {
         enemy2[i].pos1.y = GetRandomValue(200, 700);
         enemy2[i].pos2.x = GetRandomValue(200, 700);
         enemy2[i].pos2.y = GetRandomValue(200, 700);
-        enemy2[i].speed.x = 5;
-        enemy2[i].speed.y = 5; //Geschwindigkeit Gegner
-        enemy2[i].speed.z = 5;
-        enemy2[i].speed.w = 5;
+        enemy2[i].speed.x = 0;
+        enemy2[i].speed.y = 0; //Geschwindigkeit Gegner
+        enemy2[i].speed.z = 0;
+        enemy2[i].speed.w = 0;
         enemy2[i].active = true;
-        enemy2[i].gothit = false;
+      
     }
 
   }
@@ -255,31 +300,30 @@ void Game::GameScreen::ProcessInput() {
 void Game::GameScreen::Update() {
     // Your update game code here...
 
-
-    if (highscore == 1) {
+    //UPDATE SECTION -- BOSSGEGNER
+    if (highscore == 20) {
         BossMoving = true;
+
+            for (int i = 0; i < activeEnemies || i < activeEnemies2; i++)
+            {
+                    enemy[i].speed.x = 0;
+                    enemy[i].pos1.y += enemy[i].speed.y;
+                    enemy2[i].speed.x = 0;
+                    enemy2[i].pos1.y += enemy2[i].speed.y;
+            }
     }
     //Boss 
     for (int i = 0; i < NUM_MAX_ENEMIES; i++)
     {
-       
 
         if (BossMoving == true) {
             boss[i].pos1.x -= boss[i].speed.x;
         }
 
-       
-       
-        
-
         boss[i].rect.x = boss[i].pos1.x;
         boss[i].rect.y = boss[i].pos1.y;
 
-        
-
-        
-        boss[i].pos1.y += boss[i].speed.y;
-       
+        boss[i].pos1.y += boss[i].speed.y;       
 
         //// Check walls collision for bouncing
         if ((boss[i].pos1.y >= (730)) || (boss[i].pos1.y <= 200)) boss[i].speed.y *= -1.0f;
@@ -287,18 +331,142 @@ void Game::GameScreen::Update() {
 
         if ((boss[i].pos1.x <= (800)))  boss[i].speed.x *= -1.0f, boss[i].pos1.y += boss[i].speed.y, boss[i].speed.x = - 0.25;
 
+    
 
-       
+ 
+    }
 
-       
-       
+  
+    //flotte
 
+    framescounter2++;
+
+    // Every two seconds (120 frames) a new random value is generated
+    if (IsKeyPressed(KEY_F) /*((framescounter2 / 900) % 2) == 1*/)
+    {
+
+        framescounter2 = 0;
+
+
+        for (int i = 0; i < 1; i++)
+        {
+            if (!flotte[i].active)
+            {
+                // Movement
+
+
+
+                flotte[i].pos1.x = 1050;
+                flotte[i].pos1.y = 0;
+                flotte[i].rect.height = 1000;
+                flotte[i].active = true;
+
+                break;
+
+
+            }
+        }
     }
 
 
-    
-    
 
+    // Shoot logic
+    for (int i = 0; i < NUM_SHOOTS; i++)
+    {
+        if (flotte[i].active)
+        {
+            // Movement
+            flotte[i].pos1.x -= flotte[i].speed.x;
+
+            if (flotte[i].pos1.x <= 200) //Bullet über Screen hinaus
+            {
+                flotte[i].active = false;
+            }
+        }
+
+        
+    }
+
+
+
+
+    if (BossMoving == true)
+    {
+        framescounter++;
+
+        // Every two seconds (120 frames) a new random value is generated
+        if (((framescounter / 15) % 2) == 1)
+        {
+            
+            framescounter = 0;
+        
+
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (!bullet2[i].active)
+            {
+                // Movement
+
+
+                bullet2[i].pos1.x = boss[i].pos1.x + 18;
+                bullet2[i].pos1.y = boss[i].pos1.y + 5;
+                bullet2[i].active = true;
+
+                break;
+
+
+            }
+        }
+    }
+    }
+
+
+
+    // Shoot logic2
+    for (int i = 0; i < NUM_SHOOTS; i++)
+    {
+        if (bullet2[i].active)
+        {
+            // Movement
+            bullet2[i].pos1.x -= bullet2[i].speed.x;
+
+            // Kollision mit enemy
+            for (int j = 0; j < activeEnemies; j++)
+            {
+                if (boss[j].active)
+                {                  
+                    //BOSSGEGNER 
+                    if (CheckCollisionRecs(bullet[i].rect, boss[j].rect))
+                    {
+                        bullet[i].active = false;
+
+                        boss[j].lives--;
+                    }
+                    //BOSSGEGNER 
+                    if (CheckCollisionRecs(bullet2[i].rect, player.rect))
+                    {
+                        bullet2[i].active = false;
+
+                        player.lives--;
+                    }
+
+                }
+
+                if (bullet2[i].pos1.x <= -100) //Bullet über Screen hinaus
+                {
+                    bullet2[i].active = false;
+                }
+            }
+        }
+    }
+
+   
+
+
+    
+    
+    //UPDATE SECTION -- SCREENSWAP ALLE ELEMENTE
 
     for (int i = 0; i < NUM_MAX_ENEMIES; i++)
     {
@@ -316,6 +484,12 @@ void Game::GameScreen::Update() {
     {
         bullet[i].rect.x = bullet[i].pos1.x;
         bullet[i].rect.y = bullet[i].pos1.y;
+
+        bullet2[i].rect.x = bullet2[i].pos1.x;
+        bullet2[i].rect.y = bullet2[i].pos1.y;
+
+        flotte[i].rect.x = flotte[i].pos1.x;
+        flotte[i].rect.y = flotte[i].pos1.y;
     }
 
     for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
@@ -328,6 +502,8 @@ void Game::GameScreen::Update() {
     player.rect.x = player.pos.x;
     player.rect.y = player.pos.y;
 
+   
+  
 
 
     if (ScreenChangeto1 == false)
@@ -340,13 +516,22 @@ void Game::GameScreen::Update() {
         for (int i = 0; i < NUM_SHOOTS; i++)
         {
             bullet[i].pos1.x = 1000 - bullet[i].pos2.y;
-          
+            bullet2[i].pos1.x = 1000 - bullet2[i].pos2.y;
+            flotte[i].pos1.x = 1000 - flotte[i].pos2.y;
+            flotte[i].rect.height = 70;
+            flotte[i].pos1.y = GetRandomValue(200, 730);
         }
 
         for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
         {
             asteroid[i].pos1.x = 1000 - asteroid[i].pos2.y;
 
+        }
+
+        for (int i = 0; i < NUM_MAX_ENEMIES; i++)
+        {
+            boss[i].pos1.x = 860 - boss[i].pos2.y;
+          
         }
 
         ScreenChangeto2 = false;
@@ -356,10 +541,9 @@ void Game::GameScreen::Update() {
    
    //Spieler
     player.pos.x = 250;
-
- if ((player.rect.y + 43) >= 800) player.rect.y = 800 - 43;           //Spieler an Wänden einschränken
-    else if (player.rect.y <= -10) player.rect.y = -10;
- if ((player.rect.y) <= 200) player.rect.y = 200 + 1;
+      //Spieler an Wänden einschränken
+ if ((player.pos.y) >= 850) player.pos.y = 850 - 1;
+ if ((player.pos.y) <= 150) player.pos.y = 150 + 1;
 
  // Asteroid Verhalten(Spawnverhalten)
  for (int i = 0; i < activeAsteroids; i++)
@@ -432,38 +616,37 @@ void Game::GameScreen::Update() {
                      enemy[j].pos1.x = GetRandomValue(1100, 1600);      //Spawnbereich neuer Gegner x
                      enemy[j].pos1.y = GetRandomValue(200, 736);     //Spawnbereich neuer Gegner y
                      highscore++;
-                  
-               
-
+              
                  
                  }
-
-                 if (enemy2[j].gothit == true)
-                 {
+               
+                 
 
                      if (CheckCollisionRecs(bullet[i].rect, enemy2[j].rect))
                      {
                          bullet[i].active = false;
-                         enemy2[j].pos1.x = GetRandomValue(1100, 1600);      //Spawnbereich neuer Gegner x
-                         enemy2[j].pos1.y = GetRandomValue(200, 672);     //Spawnbereich neuer Gegner y
-                         highscore++;
-                         enemy2[j].gothit = false;
+                       
+                         enemy2[j].lives--;
                      }
-                 }
-                         if (CheckCollisionRecs(bullet[i].rect, enemy2[j].rect))
+                 
+                         if (enemy2[j].lives == 0)
                          {
-                             enemy2[j].gothit = true;
-                             bullet[i].active = false;
+                             enemy2[j].lives = 2;
+                             enemy2[j].pos1.x = GetRandomValue(1100, 1600);      //Spawnbereich neuer Gegner x
+                             enemy2[j].pos1.y = GetRandomValue(200, 672);     //Spawnbereich neuer Gegner y
+                             highscore++;
                          }
              }
 
-                 if (bullet[i].rect.x >= 1000) //Bullet über Screen hinaus
+                 if (bullet[i].pos1.x >= 1000) //Bullet über Screen hinaus
                  {
                      bullet[i].active = false;     
                  }
          }
      }
  }
+
+
  
 
 
@@ -485,6 +668,7 @@ void Game::GameScreen::Update() {
                      player.lives--;
                      enemy2[j].pos1.x = GetRandomValue(1020, 2000);      //Spawnbereich neuer Gegner x
                      enemy2[j].pos1.y = GetRandomValue(200, 772);     //Spawnbereich neuer Gegner y
+                     enemy2[j].lives = 2;
                  }
              }
          }
@@ -523,6 +707,7 @@ void Game::GameScreen::Update() {
             {
                 enemy2[i].pos1.x = GetRandomValue(1020, 2000);
                 enemy2[i].pos1.y = GetRandomValue(200, 672);
+                enemy2[i].lives = 2;
                 planet.landed--;
 
             }
@@ -530,9 +715,10 @@ void Game::GameScreen::Update() {
 
 
     }
-    if (highscore == 5) {
-        activeEnemies = 1;
-        activeEnemies2 = 1;
+
+    if (highscore == 0) {
+        activeEnemies = 3;
+        activeEnemies2 = 2;
     }
     if (highscore == 15) {
         activeEnemies = 2;
@@ -559,8 +745,7 @@ void Game::GameScreen::Update() {
         activeEnemies2 = 2;
 
     }
-
-
+ 
     if (player.lives == 0 || planet.landed == 0) {
         currentScreen = Game::GameOver::getInstance();
 
@@ -574,11 +759,16 @@ void Game::GameScreen::Update() {
         {
             if (enemy[i].active)
             {
+                /* enemy[i].active = false;
+                 enemy2[i].active = false;
+                 boss[i].active = false;*/
                 enemy2[i].rect.x = GetRandomValue(1020, 2000);
                 enemy[i].rect.y = GetRandomValue(200, 700);
             }
         }
     }
+
+    
 
    
 
@@ -608,7 +798,23 @@ void Game::GameScreen::Draw() {
              /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
              DrawTexture(bullettext, bullet[i].pos1.x, bullet[i].pos1.y, WHITE);
      }
+     //BUllet2 zeichnen
+     for (int i = 0; i < NUM_SHOOTS; i++)
+     {
+         if (bullet2[i].active)
+             /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
+             DrawTexture(bullettext, bullet2[i].pos1.x, bullet2[i].pos1.y, WHITE);
 
+         //Flotte zeichnen
+
+         if (flotte[i].active)
+             /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
+             DrawTexture(waveSide, flotte[i].pos1.x, flotte[i].pos1.y, WHITE);
+            // DrawRectangle(flotte[i].pos1.x, flotte[i].pos1.y, flotte[i].rect.width, flotte[i].rect.height, RED);
+
+     }
+
+     
      //Player zeichnen
      DrawTexture(playerTexture, player.pos.x, player.pos.y, WHITE);
 
@@ -626,7 +832,7 @@ void Game::GameScreen::Draw() {
              DrawTexture(alienTexture, enemy[i].rect.x, enemy[i].rect.y, WHITE);        
      }
 
-     DrawRectangle(StopBoss.x, StopBoss.y, StopBoss.width, StopBoss.height, RED);
+    
 
      //Gegner2 zeichnen
      for (int i = 0; i < activeEnemies2; i++)
@@ -652,6 +858,15 @@ void Game::GameScreen::Draw() {
      // DrawText(TextFormat("Lives: %02i", player.lives), 425, 180, 30, RED);
      // DrawText(TextFormat("Space: %02i", planet.landed), 425, 220, 25, BLUE);
      DrawText(TextFormat("Score: %02i", highscore), 820, 25, 35, LIGHTGRAY);
+
+  /*   for (int hr = h; hr > 0; hr--)
+     {
+         DrawText(TextFormat("Time: %02i", hr), 500, 100, 60, RED);
+         DrawText(TextFormat("Time: %02i", min), 500, 100, 60, RED);
+         DrawText(TextFormat("Time: %02i", s), 500, 100, 60, RED);
+
+     }*/
+     
      //Live Anzeige
      if (player.lives == 3) {
          DrawTexture(Lives, 900, 100, WHITE);

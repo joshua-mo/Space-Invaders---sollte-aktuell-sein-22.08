@@ -36,7 +36,8 @@ typedef struct Enemy
     bool active;
     Color color;
     Texture2D texture{};
-    bool gothit;
+   
+    int lives = 2;
 } Enemy;
 
 typedef struct Planet
@@ -76,11 +77,23 @@ typedef struct Boss
     bool active;
     Color color;
     Texture2D texture{};
-    bool gothit;
+    int attack1=20;
     int lives;
 } Boss;
 
+//Flotte Klasse 
+typedef struct Flotte
+{
+    Rectangle rect;
+    Rectangle rect2;
+    Vector2 speed;
+    Vector2 pos1;
+    Vector2 pos2;
+    bool active;
+    Color color;
+    Texture2D texture{};
 
+} Flotte;
 
 
 

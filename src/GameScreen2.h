@@ -37,8 +37,9 @@ namespace Game {
         Texture2D Spaces;
         Texture2D asteroidtexture;
         Texture2D bullettext2;
-
-
+        Texture2D BossTexture;
+        Texture2D bullettext;
+      
     private:
         std::vector<std::unique_ptr<Sprite>> sprites;
 

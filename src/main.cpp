@@ -7,6 +7,11 @@
 #include "game.h"
 #include "Entity.h"
 
+#include <iostream> 
+#include <time.h>
+
+
+
 Game::Screen* currentScreen;
 int highscore = 0;
 Player player;
@@ -24,6 +29,8 @@ Player player;
 
    Bullet bullet[NUM_SHOOTS];
 
+   Bullet bullet2[NUM_SHOOTS];
+
     Asteroid asteroid[NUM_MAX_ASTEROIDS];
     int activeAsteroids;
 
@@ -38,9 +45,13 @@ bool BossMoving;
 
 Rectangle StopBoss;
 
+int framescounter;
 
+int framescounter2;
 
+Flotte flotte[NUM_SHOOTS];
 
+using namespace std;
 
 int main() {
     // Enable config flags for resizable window and vertical synchro
@@ -78,6 +89,28 @@ int main() {
     
       
       
+
+
+
+      
+            
+           /* for (int hr = h; hr > 0; hr--)
+            {
+                cout << hr << ":" << min << ":" << sec << endl;
+
+            }*/
+
+
+         
+          
+
+        
+
+
+
+
+
+
         // Compute required framebuffer scaling
         float scale = MIN((float) GetScreenWidth() / Game::ScreenWidth, (float) GetScreenHeight() / Game::ScreenHeight);
 
