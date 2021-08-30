@@ -39,7 +39,7 @@ namespace Game {
         Texture2D bullettext;
         Texture2D BossTexture;
         Texture2D waveSide;
-     
+        Texture2D change;
 
     
     private:

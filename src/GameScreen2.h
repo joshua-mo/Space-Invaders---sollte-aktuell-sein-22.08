@@ -39,7 +39,9 @@ namespace Game {
         Texture2D bullettext2;
         Texture2D BossTexture;
         Texture2D bullettext;
-      
+        Texture2D waveTop;
+        Texture2D change2;
+
     private:
         std::vector<std::unique_ptr<Sprite>> sprites;
 

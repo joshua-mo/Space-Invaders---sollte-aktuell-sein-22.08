@@ -201,6 +201,7 @@ Game::GameScreen::GameScreen() {
   
 
     waveSide = LoadTexture("assets/graphics/streifen.png");
+    change = LoadTexture("assets/graphics/change.png");
     
     for (int i = 0; i < NUM_SHOOTS; i++)
     {
@@ -226,8 +227,8 @@ Game::GameScreen::GameScreen() {
 
     //Anzahl aktive Gegner 
     
-        activeEnemies = 2;
-        activeEnemies2 = 1;
+        activeEnemies = 1;
+        activeEnemies2 = 0;
         activeEnemies3 = 1;
     
   
@@ -241,10 +242,10 @@ Game::GameScreen::GameScreen() {
         enemy[i].pos1.y = GetRandomValue(200, 700);
         enemy[i].pos2.x = GetRandomValue(200, 700);
         enemy[i].pos2.y = GetRandomValue(200, 700);
-        enemy[i].speed.x = 0; 
-        enemy[i].speed.y = 0; //Geschwindigkeit Gegner
-        enemy[i].speed.z = 0;
-        enemy[i].speed.w = 0; 
+        enemy[i].speed.x = 5; 
+        enemy[i].speed.y = 5; //Geschwindigkeit Gegner
+        enemy[i].speed.z = 5;
+        enemy[i].speed.w = 5; 
        
 
         enemy[i].active = true;
@@ -258,10 +259,10 @@ Game::GameScreen::GameScreen() {
         enemy2[i].pos1.y = GetRandomValue(200, 700);
         enemy2[i].pos2.x = GetRandomValue(200, 700);
         enemy2[i].pos2.y = GetRandomValue(200, 700);
-        enemy2[i].speed.x = 0;
-        enemy2[i].speed.y = 0; //Geschwindigkeit Gegner
-        enemy2[i].speed.z = 0;
-        enemy2[i].speed.w = 0;
+        enemy2[i].speed.x = 3;
+        enemy2[i].speed.y = 3; //Geschwindigkeit Gegner
+        enemy2[i].speed.z = 3;
+        enemy2[i].speed.w = 3;
         enemy2[i].active = true;
       
     }
@@ -342,7 +343,7 @@ void Game::GameScreen::Update() {
     framescounter2++;
 
     // Every two seconds (120 frames) a new random value is generated
-    if (IsKeyPressed(KEY_F) /*((framescounter2 / 900) % 2) == 1*/)
+    if (/*IsKeyPressed(KEY_F)*/ ((framescounter2 / 600) % 2) == 1)
     {
 
         framescounter2 = 0;
@@ -378,7 +379,7 @@ void Game::GameScreen::Update() {
             // Movement
             flotte[i].pos1.x -= flotte[i].speed.x;
 
-            if (flotte[i].pos1.x <= 200) //Bullet über Screen hinaus
+            if (flotte[i].pos1.x <= -50) //Bullet über Screen hinaus
             {
                 flotte[i].active = false;
             }
@@ -519,6 +520,7 @@ void Game::GameScreen::Update() {
             bullet2[i].pos1.x = 1000 - bullet2[i].pos2.y;
             flotte[i].pos1.x = 1000 - flotte[i].pos2.y;
             flotte[i].rect.height = 70;
+            DrawTexture(change, flotte[i].pos1.x, flotte[i].pos1.y, WHITE);
             flotte[i].pos1.y = GetRandomValue(200, 730);
         }
 
@@ -716,9 +718,9 @@ void Game::GameScreen::Update() {
 
     }
 
-    if (highscore == 0) {
-        activeEnemies = 3;
-        activeEnemies2 = 2;
+    if (highscore == 5) {
+        activeEnemies = 1;
+        activeEnemies2 = 1;
     }
     if (highscore == 15) {
         activeEnemies = 2;

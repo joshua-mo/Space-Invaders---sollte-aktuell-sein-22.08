@@ -107,7 +107,8 @@ Game::GameScreen2::GameScreen2() {
     // Load Boss ship texture
     BossTexture = LoadTexture("assets/graphics/BossTop.png");
 
-
+    waveTop = LoadTexture("assets/graphics/streifen2.png");
+    change2 = LoadTexture("assets/graphics/change2.png");
     // Gegner initialisieren
 
     // Load alien ship texture
@@ -207,6 +208,7 @@ void Game::GameScreen2::Update() {
             flotte[i].pos2.y = 1000 - flotte[i].pos1.x;
            
             flotte[i].rect2.width = 70;
+            DrawTexture(change2, flotte[i].pos2.x, flotte[i].pos2.y, WHITE);
             flotte[i].pos2.x = GetRandomValue(200, 730);
            
         }
@@ -244,7 +246,7 @@ void Game::GameScreen2::Update() {
         framescounter2++;
 
         // Every two seconds (120 frames) a new random value is generated
-        if (((framescounter2 / 900) % 2) == 1)
+        if (((framescounter2 / 600) % 2) == 1)
         {
 
             framescounter2 = 0;
@@ -279,7 +281,7 @@ void Game::GameScreen2::Update() {
                 flotte[i].pos2.y += flotte[i].speed.y;
             }
 
-            if (flotte[i].pos2.x >= 800) //Bullet über Screen hinaus
+            if (flotte[i].pos2.y >= 1050) //Flotte über Screen hinaus
             {
                 flotte[i].active = false;
             }
@@ -653,8 +655,8 @@ void Game::GameScreen2::Draw() {
 
         if (flotte[i].active)
             /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
-           // DrawTexture(bullettext, bullet2[i].pos1.x, bullet2[i].pos1.y, WHITE);
-            DrawRectangle(flotte[i].pos2.x, flotte[i].pos2.y, flotte[i].rect2.width, flotte[i].rect2.height, RED);
+            DrawTexture(waveTop, flotte[i].pos2.x, flotte[i].pos2.y, WHITE);
+           // DrawRectangle(flotte[i].pos2.x, flotte[i].pos2.y, flotte[i].rect2.width, flotte[i].rect2.height, RED);
 
     }
 
