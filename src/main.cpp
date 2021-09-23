@@ -8,7 +8,7 @@
 #include "Entity.h"
 
 #include <iostream> 
-#include <time.h>
+
 
 
 
@@ -22,6 +22,8 @@ Player player;
 
   Enemy enemy2[NUM_MAX_ENEMIES];
   int activeEnemies2;
+
+  Planet planet;
 
   bool ScreenChangeto1;
 
@@ -49,9 +51,19 @@ int framescounter;
 
 int framescounter2;
 
+int framescounter3;
+
+int seconds = 5;
+
+int minutes = 3;
+
 Flotte flotte[NUM_SHOOTS];
 
 using namespace std;
+
+bool changeto2 = false;
+
+bool changeto1 = false;
 
 int main() {
     // Enable config flags for resizable window and vertical synchro
@@ -75,35 +87,27 @@ int main() {
 
     InitAudioDevice();      // Initialize audio device
   
-    Sound fxshoot = LoadSound("assets/audio/sfx/laser4.wav");
+    //Sound fxshoot = LoadSound("assets/audio/sfx/laser4.wav");
   
-        
-
-
+    Music music = LoadMusicStream("assets/audio/tracks/Mix.mp3");
+    PlayMusicStream(music);
+    music.looping = true;
+     SetMasterVolume(0.1);
+    
     
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
-        if (IsKeyPressed(KEY_SPACE)) PlaySound(fxshoot);
+       // if (IsKeyPressed(KEY_SPACE)) PlaySound(fxshoot);
     
+        UpdateMusicStream(music);
+      
+
+
+
       
       
-
-
-
-      
-            
-           /* for (int hr = h; hr > 0; hr--)
-            {
-                cout << hr << ":" << min << ":" << sec << endl;
-
-            }*/
-
-
-         
-          
-
         
 
 

@@ -51,13 +51,18 @@ extern Flotte flotte[NUM_SHOOTS];
 
 extern int framescounter2;
 
-int h, m, s;
+extern int framescounter3;
 
+extern bool changeto1;
 
+extern bool changeto2;
 
-int hr = h;
-int min = m;
-int sec = s;
+extern int seconds;
+
+extern int minutes;
+
+extern Planet planet;
+
 
 Game::GameScreen::GameScreen() {
     // Your screen initialization code here...
@@ -78,9 +83,7 @@ Game::GameScreen::GameScreen() {
     Lives = LoadTexture("assets/graphics/Lives.png");
 
 
-    h = 0;
-    m = 10;
-    s = 0;
+ 
 
     //INIT SECTION -- ASTEROID    
 
@@ -242,10 +245,10 @@ Game::GameScreen::GameScreen() {
         enemy[i].pos1.y = GetRandomValue(200, 700);
         enemy[i].pos2.x = GetRandomValue(200, 700);
         enemy[i].pos2.y = GetRandomValue(200, 700);
-        enemy[i].speed.x = 5; 
-        enemy[i].speed.y = 5; //Geschwindigkeit Gegner
-        enemy[i].speed.z = 5;
-        enemy[i].speed.w = 5; 
+        enemy[i].speed.x = 4; 
+        enemy[i].speed.y = 4; //Geschwindigkeit Gegner
+        enemy[i].speed.z = 4;
+        enemy[i].speed.w = 4; 
        
 
         enemy[i].active = true;
@@ -259,10 +262,10 @@ Game::GameScreen::GameScreen() {
         enemy2[i].pos1.y = GetRandomValue(200, 700);
         enemy2[i].pos2.x = GetRandomValue(200, 700);
         enemy2[i].pos2.y = GetRandomValue(200, 700);
-        enemy2[i].speed.x = 3;
-        enemy2[i].speed.y = 3; //Geschwindigkeit Gegner
-        enemy2[i].speed.z = 3;
-        enemy2[i].speed.w = 3;
+        enemy2[i].speed.x = 2;
+        enemy2[i].speed.y = 2; //Geschwindigkeit Gegner
+        enemy2[i].speed.z = 2;
+        enemy2[i].speed.w = 2;
         enemy2[i].active = true;
       
     }
@@ -301,9 +304,43 @@ void Game::GameScreen::ProcessInput() {
 void Game::GameScreen::Update() {
     // Your update game code here...
 
+
+
+    //TIMER
+
+    if (BossMoving == true) {
+ 
+        framescounter3++;
+    }
+
+    if (seconds == -1) 
+    {
+        seconds = 59;
+        minutes--;
+    }
+
+    //SECONDS
+    // Every two seconds (120 frames) a new random value is generated
+    if (((framescounter3 / 60) % 2) == 1)
+    {
+        framescounter3 = 0;
+
+        seconds--;
+
+       
+    }
+    
+    if (minutes == -1)
+    {
+        currentScreen = Game::GameOver::getInstance();
+    }
+
+   
+
     //UPDATE SECTION -- BOSSGEGNER
     if (highscore == 20) {
         BossMoving = true;
+       
 
             for (int i = 0; i < activeEnemies || i < activeEnemies2; i++)
             {
@@ -319,6 +356,7 @@ void Game::GameScreen::Update() {
 
         if (BossMoving == true) {
             boss[i].pos1.x -= boss[i].speed.x;
+            flotte[i].active = false;
         }
 
         boss[i].rect.x = boss[i].pos1.x;
@@ -345,7 +383,7 @@ void Game::GameScreen::Update() {
     // Every two seconds (120 frames) a new random value is generated
     if (/*IsKeyPressed(KEY_F)*/ ((framescounter2 / 600) % 2) == 1)
     {
-
+            changeto1 = false;
         framescounter2 = 0;
 
 
@@ -362,10 +400,25 @@ void Game::GameScreen::Update() {
                 flotte[i].rect.height = 1000;
                 flotte[i].active = true;
 
+              
                 break;
-
-
             }
+        }
+    }
+
+    if (changeto1 == true)
+    {
+        for (int i = 0; i < 1; i++)
+        {
+            flotte[i].rect.width = 70;
+        }
+    }
+
+    if (changeto1 == false)
+    {
+        for (int i = 0; i < 1; i++)
+        {
+            flotte[i].rect.width = 1000;
         }
     }
 
@@ -379,9 +432,24 @@ void Game::GameScreen::Update() {
             // Movement
             flotte[i].pos1.x -= flotte[i].speed.x;
 
-            if (flotte[i].pos1.x <= -50) //Bullet über Screen hinaus
+            if (flotte[i].pos1.x <= -200) //Bullet über Screen hinaus
             {
                 flotte[i].active = false;
+              
+                
+            }
+
+            //Flotte 
+            if (CheckCollisionRecs(flotte[i].rect, player.rect))
+            {
+                flotte[i].active = false;
+
+                player.lives--;
+
+               
+               
+               // flotte[i].pos1.x = 1050;
+                //flotte[i].pos1.y = 0;
             }
         }
 
@@ -520,8 +588,17 @@ void Game::GameScreen::Update() {
             bullet2[i].pos1.x = 1000 - bullet2[i].pos2.y;
             flotte[i].pos1.x = 1000 - flotte[i].pos2.y;
             flotte[i].rect.height = 70;
-            DrawTexture(change, flotte[i].pos1.x, flotte[i].pos1.y, WHITE);
+           
             flotte[i].pos1.y = GetRandomValue(200, 730);
+
+            if (flotte[i].active)
+            {
+                changeto1 = true;
+                flotte[i].rect.height = 70;
+            }
+        
+
+            
         }
 
         for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
@@ -738,24 +815,37 @@ void Game::GameScreen::Update() {
 
     }
     if (highscore == 60) {
-        activeEnemies = 6;
-        activeEnemies2 = 2;
+        activeEnemies = 5;
+        activeEnemies2 = 1;
 
     }
     if (highscore == 90) {
-        activeEnemies = 8;
+        activeEnemies = 5;
         activeEnemies2 = 2;
 
+    }
+
+    if (boss->lives == 0) {
+        currentScreen = Game::GameOver::getInstance();
     }
  
     if (player.lives == 0 || planet.landed == 0) {
         currentScreen = Game::GameOver::getInstance();
 
 
-        player.lives = 3;
+    /*    player.lives = 3;
         planet.landed = 5;
         activeEnemies = 1;
-        activeEnemies2 = 0;
+        activeEnemies2 = 0;*/
+        for (int i = 0; i < activeEnemies; i++)
+        {
+            boss[i].active = false;
+            enemy[i].active = false;
+            enemy2[i].active = false;
+            asteroid[i].active = false;
+            flotte[i].active = false;
+
+        }
 
         for (int i = 0; i < activeEnemies; i++)
         {
@@ -809,12 +899,21 @@ void Game::GameScreen::Draw() {
 
          //Flotte zeichnen
 
-         if (flotte[i].active)
-             /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
-             DrawTexture(waveSide, flotte[i].pos1.x, flotte[i].pos1.y, WHITE);
-            // DrawRectangle(flotte[i].pos1.x, flotte[i].pos1.y, flotte[i].rect.width, flotte[i].rect.height, RED);
+         if (changeto1 == false)
+         {
+             if (flotte[i].active)
+
+                 DrawTexture(waveSide, flotte[i].pos1.x, flotte[i].pos1.y, WHITE);
+         }
+         if (changeto1 == true)
+         {
+             DrawTexture(change, flotte[i].pos1.x, flotte[i].pos1.y, WHITE);
+
+         }
+
 
      }
+
 
      
      //Player zeichnen
@@ -853,6 +952,20 @@ void Game::GameScreen::Draw() {
 
 
      //Anzeigen
+
+
+
+     //TIMER
+
+     if (BossMoving == true)
+     {
+         DrawText("Timer", 459, 27, 30, LIGHTGRAY);
+         DrawText(TextFormat("%02i:", minutes), 460, 57, 35, LIGHTGRAY);
+         DrawText(TextFormat(" %02i", seconds), 493, 57, 35, LIGHTGRAY);
+
+     }
+ 
+
      DrawText(" M - pause", 70, 20, 20, LIGHTGRAY);
      DrawText(" TAB - Switch Cam", 70, 60, 20, LIGHTGRAY);
      // DrawText("Lives", 415, 180, 30, RED);

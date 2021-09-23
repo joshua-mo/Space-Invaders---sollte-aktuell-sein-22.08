@@ -48,6 +48,17 @@ extern Flotte flotte[NUM_SHOOTS];
 
 extern int framescounter2;
 
+extern int framescounter3;
+
+extern int seconds;
+
+extern int minutes;
+
+extern bool changeto2;
+extern bool changeto1;
+
+extern Planet planet;
+
 
 Game::GameScreen2::GameScreen2() {
     // Your screen initialization code here...
@@ -207,10 +218,17 @@ void Game::GameScreen2::Update() {
             bullet2[i].pos2.y = 1000 - bullet2[i].pos1.x;
             flotte[i].pos2.y = 1000 - flotte[i].pos1.x;
            
-            flotte[i].rect2.width = 70;
-            DrawTexture(change2, flotte[i].pos2.x, flotte[i].pos2.y, WHITE);
+            
+        
+            
             flotte[i].pos2.x = GetRandomValue(200, 730);
-           
+
+            if (flotte[i].active)
+            {
+                changeto2 = true;
+                flotte[i].rect2.width = 70;
+            }
+        
         }
 
         for (int i = 0; i < NUM_MAX_ASTEROIDS; i++)
@@ -235,11 +253,40 @@ void Game::GameScreen2::Update() {
 
    //# Spieler
 
-      //Spieler an Wänden einschränken
-        if ((player.rect.x + 54) >= 800) player.rect.x = 800 - 54;          
-        else if (player.rect.x <= -10) player.rect.x = -10;
-        if ((player.rect.x) <= 200) player.rect.x = 200 + 1;         
-   
+        //Spieler an Wänden einschränken
+        if ((player.pos.w) >= 850) player.pos.w = 850 - 1;
+        if ((player.pos.w) <= 150) player.pos.w = 150 + 1;
+
+
+        //TIMER
+
+        if (BossMoving == true) {
+
+            framescounter3++;
+        }
+
+        if (seconds == -1)
+        {
+            seconds = 59;
+            minutes--;
+        }
+
+        //SECONDS
+           // Every two seconds (120 frames) a new random value is generated
+        if (((framescounter3 / 60) % 2) == 1)
+        {
+            framescounter3 = 0;
+
+            seconds--;
+
+
+        }
+
+        if (minutes == -1)
+        {
+            currentScreen = Game::GameOver::getInstance();
+        }
+
 
 
         //flotte
@@ -248,7 +295,7 @@ void Game::GameScreen2::Update() {
         // Every two seconds (120 frames) a new random value is generated
         if (((framescounter2 / 600) % 2) == 1)
         {
-
+            changeto2 = false;
             framescounter2 = 0;
 
 
@@ -271,6 +318,21 @@ void Game::GameScreen2::Update() {
         }
 
 
+        if (changeto2 == true)
+        {
+            for (int i = 0; i < 1; i++)
+            {
+                flotte[i].rect2.width = 70;
+            }
+        }
+
+        if (changeto2 == false)
+        {
+            for (int i = 0; i < 1; i++)
+            {
+                flotte[i].rect2.width = 1000;
+            }
+        }
 
         // Shoot logic
         for (int i = 0; i < NUM_SHOOTS; i++)
@@ -279,12 +341,24 @@ void Game::GameScreen2::Update() {
             {
                 // Movement
                 flotte[i].pos2.y += flotte[i].speed.y;
+
+                if (flotte[i].pos2.y >= 1050) //Flotte über Screen hinaus
+                {
+                    flotte[i].active = false;
+                }
+
+                //Flotte 
+                if (CheckCollisionRecs(flotte[i].rect2, player.rect))
+                {
+                   flotte[i].active = false;
+
+                   player.lives--;
+
+                }
             }
 
-            if (flotte[i].pos2.y >= 1050) //Flotte über Screen hinaus
-            {
-                flotte[i].active = false;
-            }
+          
+
         }
 
 
@@ -509,15 +583,16 @@ void Game::GameScreen2::Update() {
 
     //UPDATE SECTION -- BOSSGEGNER
 
-    if (highscore == 100) {
+    if (highscore == 20) {
         BossMoving = true;
+
 
         for (int i = 0; i < activeEnemies || i < activeEnemies2; i++)
         {
-            enemy[i].speed.y = 0;
-            enemy[i].pos2.x += enemy[i].speed.x;
-            enemy2[i].speed.y = 0;
-            enemy2[i].pos2.x += enemy[i].speed.x;
+            enemy[i].speed.z = 0;
+            enemy[i].pos2.x += enemy[i].speed.w;
+            enemy2[i].speed.z = 0;
+            enemy2[i].pos2.x += enemy[i].speed.w;
         }
     }
     //Boss 
@@ -527,7 +602,7 @@ void Game::GameScreen2::Update() {
         if (BossMoving == true) {
            
             boss[i].pos2.y += boss[i].speed.z;
-           
+            flotte[i].active = false;
         }
 
         boss[i].rect.x = boss[i].pos2.x;
@@ -590,16 +665,28 @@ void Game::GameScreen2::Update() {
 
     }
 
-
+    if (boss->lives == 0) {
+        currentScreen = Game::GameOver::getInstance();
+    }
 
     if (player.lives == 0 || planet.landed == 0) {
         currentScreen = Game::GameOver::getInstance();
 
 
-        player.lives = 3;
+       /* player.lives = 3;
         planet.landed = 5;
         activeEnemies = 1;
-        activeEnemies2 = 0;
+        activeEnemies2 = 0;*/
+
+        for (int i = 0; i < activeEnemies; i++)
+        {
+            boss[i].active = false;
+            enemy[i].active = false;
+            enemy2[i].active = false;
+            asteroid[i].active = false;
+            flotte[i].active = false;
+
+        }
 
         for (int i = 0; i < activeEnemies; i++)
         {
@@ -634,7 +721,7 @@ void Game::GameScreen2::Draw() {
     DrawTexture(Planet1, 150, 715, WHITE);
 
     //Planet3
-    DrawTexture(Planet3, 100, -600, WHITE);
+    DrawTexture(Planet3, 95, -500, WHITE);
 
 
     //BUllet zeichnen
@@ -653,12 +740,26 @@ void Game::GameScreen2::Draw() {
 
         //Flotte zeichnen
 
-        if (flotte[i].active)
-            /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
-            DrawTexture(waveTop, flotte[i].pos2.x, flotte[i].pos2.y, WHITE);
-           // DrawRectangle(flotte[i].pos2.x, flotte[i].pos2.y, flotte[i].rect2.width, flotte[i].rect2.height, RED);
+        if (changeto2 == false)
+        {
+            if (flotte[i].active)
+            {
+                /* DrawRectangleRec(bullet[i].rect, bullet[i].color);*/
+                DrawTexture(waveTop, flotte[i].pos2.x, flotte[i].pos2.y, WHITE);
 
+            }
+        }
+
+        if (changeto2 == true)
+        {
+            DrawTexture(change2, flotte[i].pos2.x, flotte[i].pos2.y, WHITE);
+           
+        }
+
+       
     }
+
+ 
 
     //Player zeichnen
     DrawTexture(playerTexture, player.pos.w, player.pos.z, WHITE);
@@ -694,6 +795,17 @@ void Game::GameScreen2::Draw() {
 
 
     //Anzeigen
+    // 
+       //TIMER
+    if (BossMoving == true)
+    {
+        DrawText("Timer", 459, 27, 30, LIGHTGRAY);
+        DrawText(TextFormat("%02i:", minutes), 460, 57, 35, LIGHTGRAY);
+        DrawText(TextFormat(" %02i", seconds), 493, 57, 35, LIGHTGRAY);
+
+    }
+
+
     DrawText(" M - pause", 70, 20, 20, LIGHTGRAY);
     DrawText(" TAB - Switch Cam", 70, 60, 20, LIGHTGRAY);
     // DrawText("Lives", 415, 180, 30, RED);

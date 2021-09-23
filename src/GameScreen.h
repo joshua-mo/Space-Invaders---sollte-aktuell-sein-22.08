@@ -71,8 +71,7 @@ namespace Game {
 
 
 
-    static Planet planet;
-   
+
 
    
 
